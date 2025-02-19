@@ -50,13 +50,13 @@ function handleStopRecognition() {
 async function handleTranslation() {
     const text = textInput.value.trim();
     if (!text) {
-        textOutput.value = '请输入要翻译的文本';
+        textOutput.value = '请输入要提问的问题';
         return;
     }
 
     // 显示加载状态
     translateBtn.disabled = true;
-    textOutput.value = '正在翻译...';
+    textOutput.value = '正在思考...';
 
     try {
         const response = await fetch('/translate', {
@@ -72,13 +72,13 @@ async function handleTranslation() {
 
         const data = await response.json();
         if (data.success) {
-            textOutput.value = `原文：${data.original}\n译文：${data.translation}`;
+            textOutput.value = `${data.translation}`;
         } else {
-            textOutput.value = `翻译失败：${data.error || '请稍后重试'}`;
+            textOutput.value = `连接失败：${data.error || '请稍后重试'}`;
         }
     } catch (error) {
         console.error('Translation error:', error);
-        textOutput.value = '翻译失败：网络错误，请稍后重试';
+        textOutput.value = '连接失败：网络错误，请稍后重试';
     } finally {
         translateBtn.disabled = false;
     }

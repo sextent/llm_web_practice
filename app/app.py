@@ -101,7 +101,8 @@ def translate():
             api_key='sk-6145dc5b48cf44728319e074f4c588f5',
             base_url='https://dashscope.aliyuncs.com/compatible-mode/v1'
         )
-        # 进行一个简单的测试请求
+        """
+         # 进行一个简单的测试请求
         try:
             test_response = test_client.chat.completions.create(
                 model='qwen-turbo',  # 使用 turbo 模型进行测试
@@ -116,7 +117,7 @@ def translate():
                 'success': False,
                 'error': f"API connection failed: {str(test_error)}"
             }), 500
-
+        """
         # 获取请求中的JSON数据
         data = request.get_json()
         text = data.get('text')
@@ -132,7 +133,7 @@ def translate():
             base_url='https://dashscope.aliyuncs.com/compatible-mode/v1'
         )
         # 构建翻译提示
-        system_prompt = f"我是一个正在学习的数学系大学生，你的任务是尽可能详细地回答以下问题以给我学习上的帮助：{text},当你需要自我介绍的时候只要说明你是一个ai助手或助教即可。"
+        system_prompt = f"我是一个正在学习的数学系大学生，你的任务是尽可能详细地回答以下问题以给我学习上的帮助：{text},当你需要自我介绍的时候只要说明你是一个ai助手或助教即可。不应该包含你的模型和厂家。"
         #system_prompt = f"你是一个专业的翻译员，你的任务是将文本{text}翻译成{target_lang}语言。只需要输出翻译后的内容"
         print(f"System Prompt: {system_prompt}")  # 添加提示日志
         # 发送翻译请求
