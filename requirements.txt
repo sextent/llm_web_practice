@@ -7,9 +7,10 @@ googletrans==3.1.0a0
 python-engineio==4.3.4
 python-socketio==5.7.2
 Flask-SocketIO==5.3.4
-openai
-pyaudio
-dashscope
+openai==1.63.0
+pyaudio==0.2.14
+dashscope==1.22.1
 ## for socketio
 eventlet 
 gevent
+gunicorn
