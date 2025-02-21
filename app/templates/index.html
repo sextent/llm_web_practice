@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang=zh>
 <head>
-    <title>实时语音识别</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟数字人主页</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
+    <header>
+        <div class="logo">虚拟数字人</div>
+        <nav>
+            <a href="#home">主页</a>
+            <a href="#about">关于我们</a>
+            <a href="#features">功能</a>
+            <a href="#contact">联系我们</a>
+        </nav>
+    </header>
     <div class="container">
         <h1>实时语音识别</h1>
         <div class="button-container">
@@ -27,7 +36,12 @@
             <textarea id="textOutput" readonly placeholder="结果将在此展示..."></textarea>
         </div>
     </div>
-
+    
+    <!-- 页脚 -->
+    <footer>
+        <p>版权所有 © 2025 虚拟数字人技术</p>
+        <img src="{{ url_for('static', filename='school-logo.png') }}" alt="校徽">
+    </footer>
     <!-- 引入自定义 JavaScript -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
