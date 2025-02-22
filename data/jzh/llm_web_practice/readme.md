@@ -11,8 +11,6 @@
 
 ## 安装
 
-
-
 ### 环境要求
 
 - python >= 3.10
@@ -23,3 +21,13 @@
 ```bash
 git clone [仓库地址]
 cd llm_web_practice
+
+2. 安装依赖
+pip install -r requirements.txt
+
+3. 运行项目
+python app.py
+
+or
+
+gunicorn -c gunicorn_config.py app.app:app

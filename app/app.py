@@ -31,7 +31,10 @@ app.config['SECRET_KEY'] = '810975'
 # Socket.IO允许服务器和客户端之间进行实时数据交换，
 # 使得服务器可以实时地将数据推送到客户端，而无需客户端轮询服务器以获取更新。
 # cors_allowed_origins='*'参数允许来自任何域名的WebSocket连接
-socketio=SocketIO(app,cors_allowed_origins="*",async_mode='threading')
+socketio=SocketIO(app,cors_allowed_origins="*",async_mode='eventlet')
+## ！这里第二次修改时改为eventlet了
+# 提供异步处理请求
+
 
 # app.config.form_object('settings')
 
@@ -95,17 +98,18 @@ def handle_stop_recognition():
 @app.route('/translate', methods=['POST'])
 def translate():
     try:
+        '''
         # 测试连接
         print("Testing API connection...")
         test_client =OpenAI(
             api_key='sk-6145dc5b48cf44728319e074f4c588f5',
             base_url='https://dashscope.aliyuncs.com/compatible-mode/v1'
         )
-        """
+        
          # 进行一个简单的测试请求
         try:
             test_response = test_client.chat.completions.create(
-                model='qwen-turbo',  # 使用 turbo 模型进行测试
+                model='qwen-plus',  # 使用 turbo 模型进行测试
                 messages=[{"role": "user", "content": "Hello"}],
                 temperature=0.3,
                 stream=False
@@ -117,7 +121,7 @@ def translate():
                 'success': False,
                 'error': f"API connection failed: {str(test_error)}"
             }), 500
-        """
+        '''
         # 获取请求中的JSON数据
         data = request.get_json()
         text = data.get('text')
@@ -126,19 +130,23 @@ def translate():
         
         if not text or not target_lang:
             return jsonify({'error': 'Missing text or target language'}), 400
-        
+    
         # 初始化openai客户端
         client = OpenAI(
             api_key='sk-6145dc5b48cf44728319e074f4c588f5',
             base_url='https://dashscope.aliyuncs.com/compatible-mode/v1'
         )
-        # 构建翻译提示
-        system_prompt = f"我是一个正在学习的数学系大学生，你的任务是尽可能详细地回答以下问题以给我学习上的帮助：{text},当你需要自我介绍的时候只要说明你是一个ai助手或助教即可。不应该包含你的模型和厂家。"
+        reasoning_content =""
+        answer_content = ""
+        is_answering = False
+        
+        # 构建提示
+        system_prompt = f"我是一个正在学习的数学系大学生，你的任务是尽可能详细地回答以下问题以给我学习上的帮助：{text}。"
         #system_prompt = f"你是一个专业的翻译员，你的任务是将文本{text}翻译成{target_lang}语言。只需要输出翻译后的内容"
         print(f"System Prompt: {system_prompt}")  # 添加提示日志
-        # 发送翻译请求
+        # 发送聊天请求
         response = client.chat.completions.create(
-            model='qwen-turbo',
+            model='deepseek-r1',
             messages=[
                 {
                     "role": "user",
@@ -147,16 +155,48 @@ def translate():
             ],
             temperature=0.3,
             modalities=['text'], # 只需要文本输出
-            stream=False
+            stream=True,
+            # 解除以下注释会在最后一个chunk返回Token使用量
+            stream_options={
+                "include_usage": True
+            }
         )
         print(f"API Response: {response}")  # 添加响应日志
-        # 获取翻译结果
-        translation = response.choices[0].message.content
-        print(f"Translation: {translation}")
-        # 返回翻译结果
+        print("\n" + "=" * 20 + "思考过程" + "=" * 20 + "\n")
+        
+        for chunk in response:
+            # 如果chunk.choices为空，则打印usage
+            if not chunk.choices:
+                print("\nUsage:")
+                print(chunk.usage)
+            else:
+                delta = chunk.choices[0].delta
+                # 打印思考过程
+                if hasattr(delta, 'reasoning_content') and delta.reasoning_content != None:
+                    print(delta.reasoning_content, end='', flush=True)
+                    reasoning_content += delta.reasoning_content
+                else:
+                    # 开始回复
+                    if delta.content != "" and is_answering == False:
+                        print("\n" + "=" * 20 + "完整回复" + "=" * 20 + "\n")
+                        is_answering = True
+                    #    打印回复过程
+                    print(delta.content, end='', flush=True)
+                    answer_content += delta.content
+        # 获取结果
+        # 非流式输出模型
+        # translation = response.choices[0].message.content  
+        # print(f"Translation: {translation}")
+        # 返回结果
         return jsonify({'success':True,
                         'original': text,
-                        'translation': translation})
+                        'reasoning': reasoning_content,
+                        'answer':answer_content,
+                        'full_response':{
+                            'reasoning':reasoning_content,
+                            'answer':answer_content
+                            }
+                        })
     except Exception as e:
         print(f"Translation error: {str(e)}")
         error_message = str(e)

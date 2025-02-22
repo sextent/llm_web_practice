@@ -33,7 +33,16 @@
                 <textarea id="textInput" placeholder="请输入文字..."></textarea>
                 <button id="translateBtn">发送</button>
             </div>
-            <textarea id="textOutput" readonly placeholder="结果将在此展示..."></textarea>
+            <div class="output-container">
+                <div class="reasoning-section">
+                    <h3>思考过程</h3>
+                    <textarea id="reasoningOutput" readonly placeholder="思考过程将在此展示..."></textarea>
+                </div>
+                <div class="answer-section">
+                    <h3>最终答案</h3>
+                    <textarea id="textOutput" readonly placeholder="答案将在此展示..."></textarea>
+                </div>
+            </div>
         </div>
     </div>
     

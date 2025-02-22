@@ -46,7 +46,10 @@ function handleStopRecognition() {
     stopBtn.disabled = true;
 }
 
-// 翻译功能
+// 获取新添加的元素
+const reasoningOutput = document.getElementById('reasoningOutput');
+
+// 交流提问功能
 async function handleTranslation() {
     const text = textInput.value.trim();
     if (!text) {
@@ -56,7 +59,9 @@ async function handleTranslation() {
 
     // 显示加载状态
     translateBtn.disabled = true;
-    textOutput.value = '正在思考...';
+    reasoningOutput.value = '正在思考...';
+    textOutput.value = '等待回答...';
+
 
     try {
         const response = await fetch('/translate', {
@@ -72,12 +77,20 @@ async function handleTranslation() {
 
         const data = await response.json();
         if (data.success) {
-            textOutput.value = `${data.translation}`;
+            // 分别显示思考过程和答案
+            reasoningOutput.value = data.reasoning || '没有显示思考过程';
+            textOutput.value = data.answer || '没有生成答案';
+            // 自动滚动到底部
+            reasoningOutput.scrollTop = reasoningOutput.scrollHeight;
+            textOutput.scrollTop = textOutput.scrollHeight;
         } else {
+            reasoningOutput.value = '';
             textOutput.value = `连接失败：${data.error || '请稍后重试'}`;
+
         }
     } catch (error) {
         console.error('Translation error:', error);
+        reasoningOutput.value = '';
         textOutput.value = '连接失败：网络错误，请稍后重试';
     } finally {
         translateBtn.disabled = false;

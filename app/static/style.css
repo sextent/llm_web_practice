@@ -263,3 +263,35 @@ footer img {
     height: 50px;
     margin-top: 10px;
 }
+
+.output-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.reasoning-section,
+.answer-section {
+    flex: 1;
+}
+
+.reasoning-section h3,
+.answer-section h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#reasoningOutput,
+#textOutput {
+    width: 100%;
+    min-height: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+#reasoningOutput {
+    background-color: #f9f9f9;
+}

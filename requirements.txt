@@ -14,3 +14,5 @@ dashscope==1.22.1
 eventlet 
 gevent
 gunicorn
+# for deepseek v3
+"sglang[all]>=0.4.3" --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer-python

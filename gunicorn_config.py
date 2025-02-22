@@ -1,3 +1,5 @@
 bind = "0.0.0.0:9000"
-workers = 4
-timeout = 120
+worker_class ='eventlet'
+worker_connections = 1000
+workers = 1
+timeout = 300
