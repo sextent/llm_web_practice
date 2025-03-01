@@ -139,7 +139,7 @@ def translate():
         reasoning_content =""
         answer_content = ""
         is_answering = False
-        
+        socketio.emit('answer_start',{'message':'开始生成回答···'})
         # 构建提示
         system_prompt = f"我是一个正在学习的数学系大学生，你的任务是尽可能详细地回答以下问题以给我学习上的帮助：{text}。"
         #system_prompt = f"你是一个专业的翻译员，你的任务是将文本{text}翻译成{target_lang}语言。只需要输出翻译后的内容"
@@ -173,6 +173,7 @@ def translate():
                 delta = chunk.choices[0].delta
                 # 打印思考过程
                 if hasattr(delta, 'reasoning_content') and delta.reasoning_content != None:
+                    socketio.emit('answer_reasoning',{'content':delta.reasoning_content})
                     print(delta.reasoning_content, end='', flush=True)
                     reasoning_content += delta.reasoning_content
                 else:
@@ -181,6 +182,12 @@ def translate():
                         print("\n" + "=" * 20 + "完整回复" + "=" * 20 + "\n")
                         is_answering = True
                     #    打印回复过程
+                    socketio.emit('translation_answer_start', {
+                                'message': '开始输出答案'
+                            })
+                    socketio.emit('translation_answer', {
+                            'content': delta.content
+                        })
                     print(delta.content, end='', flush=True)
                     answer_content += delta.content
         # 获取结果
